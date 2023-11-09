@@ -31,10 +31,8 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'title' => 'required',
-            'price' => 'required',
-            'image' => 'required',
-            'description' => 'required',
+            'name' => 'required',
+            'image' => 'nullable|mimes:png,jpg,jpeg,gif,svg,jfif',
         ]);
 
         $product = new Product();
@@ -51,9 +49,7 @@ class ProductController extends Controller
             }
         }
 
-        $product->title = $request->input('title');
-        $product->price = $request->input('price');
-        $product->description = $request->input('description');
+        $product->name = $request->input('name');
 
         $status = $product->save();
 
@@ -92,10 +88,8 @@ class ProductController extends Controller
     {
         // dd($request->all());
         $this->validate($request, [
-            'title' => 'required',
-            'price' => 'required',
-            'image' => 'required',
-            'description' => 'required',
+            'name' => 'required',
+            'image' => 'nullable|mimes:png,jpg,jpeg,gif,svg,jfif',
         ]);
 
         $product = Product::find($id);
@@ -113,9 +107,7 @@ class ProductController extends Controller
             }
         }
 
-        $product->title = $request->input('title');
-        $product->price = $request->input('price');
-        $product->description = $request->input('description');
+        $product->name = $request->input('name');
 
         $status = $product->save();
 
