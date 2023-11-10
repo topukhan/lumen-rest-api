@@ -10,42 +10,48 @@
 
 <body>
     <div class="container mt-5">
-        <h1>Customer Details</h1>
+        <h1>Product Details</h1>
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title" id="customerName"></h5><br>
-                <img src="" alt="Customer Image" id="customerImage" class="img-fluid h-50 w-50 rounded">
+                <h5 class="card-title" id="productName"></h5><br>
+                <img src="" alt="Product Image" id="productImage" class="img-fluid h-50 w-50 rounded">
             </div>
         </div>
-        <a href="{{ url('customers')}}" class="btn btn-primary mt-3">Back to List</a>
+        <a href="<?php echo url('/products'); ?>" class="btn btn-primary mt-3">Back to List</a>
     </div>
 
     <script>
-        // Get the customer ID from the URL
-        const customerId = window.location.pathname.split('/').pop();
+        // Get the product ID from the URL
+        const productId = window.location.pathname.split('/').pop();
 
-        // console.log(customerId);
+        // console.log(productId);
 
-        const apiUrl = `/api/v1/customers/${customerId}`;
-        const customerName = document.getElementById('customerName');
-        const customerImage = document.getElementById('customerImage');
+        const apiUrl = `/api/v1/products/${productId}`;
+        const productName = document.getElementById('productName');
+        const productImage = document.getElementById('productImage');
 
         fetch(apiUrl)
-            .then(response => response.json())
-            .then(responseData => {
-                const data = responseData.data;
-                customerName.textContent = `Name: ${data.name}`;
-                
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data); // Log the entire response object
+
+                productName.textContent = `Name: ${data.name}`;
+
                 if (data.image && isImageFileName(data.image)) {
-                    customerImage.src = `${data.image}`;
+                    productImage.src = `<?php echo url('/images/${data.image}'); ?>`;
                 } else {
                     // If there is no valid image name, hide the image tag
-                    customerImage.style.display = 'none';
+                    productImage.style.display = 'none';
                 }
-                console.log(data)
+                console.log(data);
             })
             .catch(error => {
-                console.error('Error fetching customer data:', error);
+                console.error('Error fetching product data:', error);
             });
 
         function isImageFileName(fileName) {
@@ -61,5 +67,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 
 </html>

@@ -4,16 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Create</title>
-    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+    <title>Product Create</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="pb-5">
 
     <div class="container">
-        <h1>Create Customer</h1>
-        <form id="customer-form">
+        <h1>Create Product</h1>
+        <form id="product-form">
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="name" class="form-label">Name: <span class="text-danger">*</span> </label>
@@ -26,8 +25,8 @@
                 </div>
             </div>
             <div class="mb-3">
-                <button type="submit" class="btn btn-primary">Create Customer</button>
-                <a href="{{ url('customers') }}" class="btn btn-danger ml-2">Back</a>
+                <button type="submit" class="btn btn-primary">Create Product</button>
+                <a href="<?php echo url('/products'); ?>" class="btn btn-danger ml-2">Back</a>
             </div>
         </form>
         <div id="error-message" style="color: red;"></div>
@@ -35,11 +34,11 @@
     </div>
 
     <script>
-        const apiUrl = '/api/v1/customers';
+        const apiUrl = '/api/v1/products/create';
         const errorDiv = document.getElementById('error-message');
         const messageDiv = document.getElementById('message');
 
-        document.getElementById('customer-form').addEventListener('submit', (event) => {
+        document.getElementById('product-form').addEventListener('submit', (event) => {
             event.preventDefault(); // Prevent the default form submission behavior
 
             const name = document.getElementById('name').value;
@@ -47,7 +46,9 @@
 
             const formData = new FormData();
             formData.append('name', name);
-            formData.append('image', image);
+            if(image){
+                formData.append('image', image);
+            }
 
             fetch(apiUrl, {
                     method: 'POST',
@@ -55,6 +56,7 @@
                     redirect: 'follow', // Allow the fetch to follow redirects
                 })
                 .then(response => {
+                    console.log(response)
                     if (response.status === 422) {
                         // The response status is 422, indicating validation errors
                         return response.json()
@@ -66,16 +68,17 @@
                     }
                     if (response.ok) {
                         // Handle success
-                        messageDiv.textContent = 'Customer created successfully.';
+                        messageDiv.textContent = 'Product created successfully.';
                         clearFormFields(); // Optionally, clear the form fields
                     } else {
                         // Handle other errors
                         messageDiv.style.color = 'red';
-                        messageDiv.textContent = 'Failed to create customer.';
+                        messageDiv.textContent = 'Failed to create product.';
                     }
                 })
                 .catch(error => {
                     // Handle network errors
+                    messageDiv.textContent = error
                     console.error('Network error:', error);
                 });
 
@@ -88,5 +91,6 @@
         }
     </script>
 </body>
+
 
 </html>

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 | and give it the Closure to call when that URI is requested.
 |
 */
-
+// Api Routes 
 $router->get('/api/v1/products', 'ProductController@index');
 $router->get('/api/v1/products/{id}', 'ProductController@show');
 $router->post('/api/v1/products/create', 'ProductController@store');
@@ -25,11 +25,23 @@ $router->post('/api/v1/products/create', 'ProductController@store');
 $router->post('/api/v1/products/update/{id}', 'ProductController@update');
 $router->delete('/api/v1/products/delete/{id}', 'ProductController@destroy');
 
+// View file routes
 $router->get('/', function () use ($router) {
     echo "<h1>Hello Lumen</h1>";
 });
 
-// Route::view('/products', 'product.index');
-// Route::view('/products/create', 'product.create');
-// Route::view('/product/show/{id}', 'product.show');
-// Route::view('/product/edit/{id}', 'product.edit');
+$router->get('/products', function () use ($router) {
+    return view('product.index');
+});
+
+$router->get('/products/create', function () use ($router) {
+    return view('product.create');
+});
+
+$router->get('/products/show/{id}', function ($id) use ($router) {
+    return view('product.show', ['id' => $id]);
+});
+
+$router->get('/products/edit/{id}', function ($id) use ($router) {
+    return view('product.edit', ['id' => $id]);
+});
