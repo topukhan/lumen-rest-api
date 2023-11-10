@@ -5,15 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Edit</title>
-    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="pb-5">
 
     <div class="container">
-        <h1>Edit Customer</h1>
-        <form id="customer-edit-form">
+        <h1>Edit Product</h1>
+        <form id="product-edit-form">
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="name" class="form-label">Name: <span class="text-danger">*</span> </label>
@@ -24,84 +23,69 @@
                     <input type="file" id="image" name="image" class="form-control" accept="image/*">
                 </div>
                 <div class="col-md-6 mb-3">
-                    <button type="submit" class="btn btn-primary">Update Customer</button>
-                    <a href="{{ url('customers') }}" class="btn btn-danger ml-2">Back</a>
+                    <button type="submit" class="btn btn-primary">Update Product</button>
+                    <a href="<?php echo url('/products'); ?>" class="btn btn-danger ml-2">Back</a>
                     <div id="error-message" class="text-danger mt-2"></div>
                     <div id="message" class="text-success mt-2"></div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <img src="" alt="Customer Image" id="customerImage" class="img-fluid  rounded">
+                    <img src="" alt="Product Image" id="productImage" class="img-fluid h-50  rounded">
                 </div>
             </div>
         </form>
-
     </div>
 
     <script>
-        // Populate customer info
-        const customerId = window.location.pathname.split('/').pop();
-        const apiUrlShow = `/api/v1/customers/${customerId}`;
+        // Populate product info
+        const productId = window.location.pathname.split('/').pop();
+        const apiUrlShow = `/api/v1/products/${productId}`;
         const errorDiv = document.getElementById('error-message');
         const messageDiv = document.getElementById('message');
         fetch(apiUrlShow)
             .then(response => response.json())
-            .then(responseData => {
-                const data = responseData.data;
+            .then(data => {
                 console.log(data);
                 document.getElementById('name').value = `${data.name}`;
 
                 // Display the existing image if it exists
                 if (data.image && isImageFileName(data.image)) {
-                    customerImage.src = `${data.image}`;
+                    productImage.src = `<?php echo url('/images/${data.image}'); ?>`;
                 } else {
-                    customerImage.style.display = 'none';
+                    productImage.style.display = 'none';
                 }
             })
             .catch(error => {
-                console.error('Error fetching customer data:', error);
+                console.error('Error fetching product data:', error);
+                errorDiv.textContent = error
             });
+
         // extract the image name from the image element
         function isImageFileName(fileName) {
-            // regular expression pattern for image file extensions
             const imageFilePattern = /\.(jpg|jpeg|png|gif|jfif)$/i;
 
-            // test if the file name match
             return imageFilePattern.test(fileName);
         }
 
-        // update customers
-        const apiUrlUpdate = `/api/v1/customers/${customerId}`;
+        // update products
+        const apiUrlUpdate = `/api/v1/products/update/${productId}`;
 
-        document.getElementById('customer-edit-form').addEventListener('submit', (event) => {
+        document.getElementById('product-edit-form').addEventListener('submit', (event) => {
             event.preventDefault();
 
-            // assign values from the populated fields
             const name = document.getElementById('name').value;
+            const image = document.getElementById('image').files[0];
 
-            const updatedCustomerData = {
-                name: name,
-            };
+            const formData = new FormData();
+            formData.append('name', name);
+            if (image) {
+                formData.append('image', image);
+            }
 
-            // Handle image update
-            // const imageInput = document.getElementById('image');
-            // if (imageInput.files.length > 0) {
-            //     updatedCustomerData.image = imageInput.files[0];
-            // }
-
-            // Create a FormData object to handle image updates
-            // const formData = new FormData();
-            // for (const key in updatedCustomerData) {
-            //     formData.append(key, updatedCustomerData[key]);
-            // }
-
-
-            // Make a PUT request to update the customer
             fetch(apiUrlUpdate, {
-                    method: 'PUT', // Use PUT for updates
-                    body: JSON.stringify(updatedCustomerData), // Use FormData for sending image data
+                    method: 'POST',
+                    body: formData, // Use FormData for sending image data
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json', // Set the appropriate content type
                     },
                     redirect: 'follow', // Allow the fetch to follow redirects
                 })
@@ -110,27 +94,26 @@
                         // The response status is 422, indicating validation errors
                         return response.json()
                             .then(data => {
-                                // Handle validation errors
                                 messageDiv.style.color = 'red';
                                 messageDiv.textContent = 'Validation errors: ' + Object.values(data.errors).join(', ');
                             });
                     }
                     if (response.ok) {
-                        // Handle success
                         messageDiv.style.color = 'green';
-                        messageDiv.textContent = 'Customer updated successfully.';
+                        messageDiv.textContent = 'Product updated successfully.';
                     } else {
-                        // Handle other errors
-                        messageDiv.style.color = 'red';
-                        messageDiv.textContent = 'Failed to update customer.';
+                        errorDiv.style.color = 'red';
+                        errorDiv.textContent = 'Failed to update product.';
                     }
                 })
                 .catch(error => {
                     // Handle network errors
-                    console.error('Network error:', error);
+                    console.error(error);
+                    errorDiv.textContent = error
                 });
         });
     </script>
 </body>
+
 
 </html>

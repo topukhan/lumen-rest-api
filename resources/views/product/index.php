@@ -81,7 +81,7 @@
             editButton.textContent = 'Edit';
             editButton.className = 'btn btn-info mx-2';
             editButton.addEventListener('click', () => {
-                window.location.href = `/product/edit/${product.id}`;
+                window.location.href = `/products/edit/${product.id}`;
             });
 
             const deleteButton = document.createElement('button');
